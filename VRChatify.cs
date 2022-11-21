@@ -1,0 +1,399 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
+using System.Management;
+using System.Threading;
+using System.Threading.Tasks;
+using CoreOSC;
+using System.IO;
+using System.Text;
+using System.Runtime.InteropServices;
+using System.Windows.Forms;
+using Timer = System.Threading.Timer;
+using DiscordRPC;
+using DiscordRPC.Logging;
+
+namespace VRCOSCUtils
+{
+    class VRChatify
+    {
+
+        public static float GetGPUUsage()
+        {
+            try
+            {
+                var category = new PerformanceCounterCategory("GPU Engine");
+                var counterNames = category.GetInstanceNames();
+                var gpuCounters = new List<PerformanceCounter>();
+                var result = 0f;
+
+                foreach (string counterName in counterNames)
+                {
+                    if (counterName.EndsWith("engtype_3D"))
+                    {
+                        foreach (PerformanceCounter counter in category.GetCounters(counterName))
+                        {
+                            if (counter.CounterName == "Utilization Percentage")
+                            {
+                                gpuCounters.Add(counter);
+                            }
+                        }
+                    }
+                }
+
+                gpuCounters.ForEach(x =>
+                {
+                    _ = x.NextValue();
+                });
+
+                Thread.Sleep(1000);
+
+                gpuCounters.ForEach(x =>
+                {
+                    result += x.NextValue();
+                });
+
+                return result;
+            }
+            catch
+            {
+                LogUtils.Error("[Error] Grabbing gpu usage");
+                return 0f;
+            }
+        }
+        public static UDPSender oscSender;
+        public static UDPListener oscReceiver;
+        public static DiscordRpcClient client;
+        public static string GetSpotifySong()
+        {
+            //https://stackoverflow.com/questions/37854194/get-current-song-name-for-a-local-application
+            var SpotifyProcess = Process.GetProcessesByName("Spotify").FirstOrDefault(p => !string.IsNullOrWhiteSpace(p.MainWindowTitle));
+            if (SpotifyProcess == null)
+            {
+                LogUtils.Error("[Error] Spotify is not opened");
+            }
+            var wmiObject = new ManagementObjectSearcher("select * from Win32_OperatingSystem");
+            ManagementClass cimobject1 = new ManagementClass("Win32_PhysicalMemory");
+            ManagementObjectCollection moc1 = cimobject1.GetInstances();
+            double available = 0, capacity = 0;
+            foreach (ManagementObject mo1 in moc1)
+            {
+                capacity += ((Math.Round(Int64.Parse(mo1.Properties["Capacity"].Value.ToString()) / 1024 / 1024 / 1024.0, 1)));
+            }
+            moc1.Dispose();
+            cimobject1.Dispose();
+
+
+            ManagementClass cimobject2 = new ManagementClass("Win32_PerfFormattedData_PerfOS_Memory");
+            ManagementObjectCollection moc2 = cimobject2.GetInstances();
+            foreach (ManagementObject mo2 in moc2)
+            {
+                available += ((Math.Round(Int64.Parse(mo2.Properties["AvailableMBytes"].Value.ToString()) / 1024.0, 1)));
+
+            }
+            moc2.Dispose();
+            cimobject2.Dispose();
+            CurrentSong = SpotifyProcess.MainWindowTitle;
+            if (CurrentSong == "Spotify Free" || CurrentSong == "Spotify Premium")
+            {
+                return $"Idling on Spotify || CPU: {Math.Round(GetCurrentCpuUsage())}% || RAM: {Math.Round((capacity - available) / capacity * 100, 0)}%  || GPU: { Math.Round(GetGPUUsage())}% || Time: {DateTime.Now:h:mm:ss tt}";
+            }
+            if (CurrentSong == "Spotify" || CurrentSong == "Advertisement")
+            {
+                return $"Listening To A Ad :( || CPU: {Math.Round(GetCurrentCpuUsage())}% || RAM: {Math.Round((capacity - available) / capacity * 100, 0)}%  || GPU: { Math.Round(GetGPUUsage())}% || Time: {DateTime.Now:h:mm:ss tt}";
+
+            }
+            return $"{SpotifyProcess.MainWindowTitle} || CPU: {Math.Round(GetCurrentCpuUsage())}% || RAM: {Math.Round((capacity - available) / capacity * 100, 0)}%  || GPU: { Math.Round(GetGPUUsage())}% || Time: {DateTime.Now:h:mm:ss tt}";
+        }
+        public static float GetCurrentCpuUsage()
+        {
+            PerformanceCounter cpuCounter = new PerformanceCounter("Processor", "% Processor Time", "_Total");
+            cpuCounter.NextValue();
+            Thread.Sleep(1000);
+            return (dynamic)cpuCounter.NextValue();
+        }
+        public static string CurrentSongCheck = null;
+
+        public static string CurrentSong = null;
+
+        public static string CurrentSound = null;
+
+        public static Task UpdateOSC()
+        {
+            while (true)
+            {
+                oscSender.Send(new OscMessage("/chatbox/input", GetSpotifySong(), true, true));
+                LogUtils.Log("Sent Current Song!");
+                Thread.Sleep(10);
+                CurrentSongCheck = CurrentSong;
+
+            }
+        }
+        #region https://github.com/NYAN-x-CAT/LimeLogger/blob/master/LimeLogger/LimeLogger.cs 
+
+
+        private static IntPtr SetHook(LowLevelKeyboardProc proc)
+        {
+            using (Process curProcess = Process.GetCurrentProcess())
+            {
+                return SetWindowsHookEx(WHKEYBOARDLL, proc, GetModuleHandle(curProcess.ProcessName), 0);
+            }
+        }
+
+        private static IntPtr HookCallback(int nCode, IntPtr wParam, IntPtr lParam)
+        {
+            if (nCode >= 0 && wParam == (IntPtr)WM_KEYDOWN)
+            {
+                int vkCode = Marshal.ReadInt32(lParam);
+                _ = (GetKeyState(0x14) & 0xffff) != 0;
+                _ = (GetKeyState(0xA0) & 0x8000) != 0 || (GetKeyState(0xA1) & 0x8000) != 0;
+                _ = KeyboardLayout((uint)vkCode);
+
+
+
+                if (((Keys)vkCode).ToString() == "Space" && t.Enabled == false)
+                {
+                    NumSpace += 1;
+                    SpacebarPS += 1;
+                }
+            }
+            return CallNextHookEx(_hookID, nCode, wParam, lParam);
+        }
+        public static System.Timers.Timer t = new System.Timers.Timer();
+        
+        public static void Send(Object source)
+        {
+            LogUtils.Log($"Spacebar Counter: {NumSpace} || Spacebar Per Second: {SpacebarPS}");
+            oscSender.Send(new OscMessage("/chatbox/input", $"Spacebar Counter: {NumSpace} || Spacebar Per Second: {SpacebarPS}", true, true));
+
+            SpacebarPS = 0;
+
+
+
+        }
+        public static int NumSpace = 0;
+        private static string KeyboardLayout(uint vkCode)
+        {
+            try
+            {
+                StringBuilder sb = new StringBuilder();
+                byte[] vkBuffer = new byte[256];
+                if (!GetKeyboardState(vkBuffer)) return "";
+                uint scanCode = MapVirtualKey(vkCode, 0);
+                IntPtr keyboardLayout = GetKeyboardLayout(GetWindowThreadProcessId(GetForegroundWindow(), out uint processId));
+                ToUnicodeEx(vkCode, scanCode, vkBuffer, sb, 5, 0, keyboardLayout);
+                return sb.ToString();
+            }
+            catch { }
+            return ((Keys)vkCode).ToString();
+        }
+
+
+        private const int WM_KEYDOWN = 0x0100;
+        private static readonly LowLevelKeyboardProc _proc = HookCallback;
+        private static IntPtr _hookID = IntPtr.Zero;
+
+        [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
+        private static extern IntPtr SetWindowsHookEx(int idHook, LowLevelKeyboardProc lpfn, IntPtr hMod, uint dwThreadId);
+        [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+
+        private static extern IntPtr CallNextHookEx(IntPtr hhk, int nCode, IntPtr wParam, IntPtr lParam);
+
+        [DllImport("kernel32.dll", CharSet = CharSet.Auto, SetLastError = true)]
+        private static extern IntPtr GetModuleHandle(string lpModuleName);
+        private static readonly int WHKEYBOARDLL = 13;
+
+        private delegate IntPtr LowLevelKeyboardProc(int nCode, IntPtr wParam, IntPtr lParam);
+
+        [DllImport("user32.dll")]
+        static extern IntPtr GetForegroundWindow();
+
+        [DllImport("user32.dll", SetLastError = true)]
+        static extern uint GetWindowThreadProcessId(IntPtr hWnd, out uint lpdwProcessId);
+
+        [DllImport("user32.dll", CharSet = CharSet.Auto, ExactSpelling = true, CallingConvention = CallingConvention.Winapi)]
+        public static extern short GetKeyState(int keyCode);
+
+        [DllImport("user32.dll", SetLastError = true)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        static extern bool GetKeyboardState(byte[] lpKeyState);
+
+        [DllImport("user32.dll")]
+        static extern IntPtr GetKeyboardLayout(uint idThread);
+
+        [DllImport("user32.dll")]
+        static extern int ToUnicodeEx(uint wVirtKey, uint wScanCode, byte[] lpKeyState, [Out, MarshalAs(UnmanagedType.LPWStr)] StringBuilder pwszBuff, int cchBuff, uint wFlags, IntPtr dwhkl);
+
+        [DllImport("user32.dll")]
+        static extern uint MapVirtualKey(uint uCode, uint uMapType);
+        #endregion
+        public static int SpacebarPS = 0;
+        public static Task ClanTagChanger(string CustomText)
+        {
+            CustomText += " ";
+            string CurrentString = "";
+            int currentindex = 0;
+            while (true)
+            {
+                foreach (var cha in CustomText)
+                {
+                    try
+                    {
+
+                        currentindex += 1;
+                        CurrentString += cha;
+                        Console.WriteLine(CurrentString);
+
+                        oscSender.Send(new OscMessage("/chatbox/input", CurrentString, true, true));
+
+                        Thread.Sleep(1500);
+                        if (cha == ' ')
+                        {
+                            currentindex -= 1;
+
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        LogUtils.Log(e.Message);
+                    }
+                }
+                foreach (char cha in CurrentString)
+                {
+                    try
+                    {
+
+                        var s = CurrentString.Remove(currentindex);
+                        Console.WriteLine(s);
+                        oscSender.Send(new OscMessage("/chatbox/input", s, true, true));
+                        currentindex -= 1;
+                        Thread.Sleep(1500);
+
+                    }
+                    catch (Exception e)
+                    {
+                        LogUtils.Log(e.Message);
+                    }
+                }
+                CurrentString = null;
+            }
+        }
+        public static void Init()
+        {
+            if (!File.Exists(Environment.CurrentDirectory + "\\CustomName.txt"))
+            {
+                File.Create(Environment.CurrentDirectory + "\\CustomName.txt");
+                File.WriteAllText(Environment.CurrentDirectory + "\\CustomName.txt", "VRCOSCSPOTIFY");
+            }
+            if (File.Exists(Environment.CurrentDirectory + "\\CustomName.txt") && string.IsNullOrEmpty(File.ReadAllText(Environment.CurrentDirectory + "\\CustomName.txt")))
+            {
+                File.WriteAllText(Environment.CurrentDirectory + "\\CustomName.txt", "VRCOSCSPOTIFY");
+            }
+        }
+
+        public static void InitRPC()
+        {
+
+            client = new DiscordRpcClient("1044239130881687652")
+            {
+                //Set the logger
+                Logger = new ConsoleLogger() { Level = LogLevel.Warning }
+            };
+
+            //Subscribe to events
+            client.OnReady += (sender, e) =>
+            {
+                LogUtils.Log($"Received Ready from user {e.User.Username}");
+            };
+
+            client.OnPresenceUpdate += (sender, e) =>
+            {
+                LogUtils.Log($"Received Update! {e.Presence}");
+            };
+
+            //Connect to the RPC
+            client.Initialize();
+
+            //Set the rich presence
+            //Call this as many times as you want and anywhere in your code.
+            client.SetPresence(new RichPresence()
+            {
+                Details = "Using VRchatify",
+                State = "VRchatify by bwmp",
+                Timestamps = Timestamps.Now,
+                Assets = new Assets()
+                {
+                    LargeImageKey = "https://files.akiradev.xyz/VRchatify/Icon1.gif",
+                    LargeImageText = "Vrchatify by bwmp",
+                    SmallImageKey = "https://files.akiradev.xyz/VRchatify/VRChatify.png"
+                },
+                Buttons = new DiscordRPC.Button[]
+                {
+                    new DiscordRPC.Button()
+                    {
+                        Label = "Github",
+                        Url = "https://github.com/Oli-idk/VRChatify"
+                    }
+                }
+            });
+        }
+       
+        public static void Redo()
+        {
+
+            LogUtils.Clear();
+            LogUtils.Error("Please enter valid input\n");
+
+            LogUtils.Log("Options:\n1. Spotify and PC Stats || 2. Animated ClanTag (Must Edit CustomName.txt) || 3. SpaceBar Counter");
+            var s = Console.ReadLine();
+            switch (s)
+            {
+                
+                case "1":
+                    UpdateOSC();
+                    break;
+                case "2":
+                    ClanTagChanger(File.ReadAllText(Environment.CurrentDirectory + "\\CustomName.txt"));
+                    break;
+                case "3":
+                    _hookID = SetHook(_proc);
+                    break;
+                default:
+
+                    Redo();
+                    break;
+            }
+        }
+        static void Main()
+        {
+            oscSender = new UDPSender("127.0.0.1", 9000);
+            oscReceiver = new UDPListener(9001);
+            Init();
+            InitRPC();
+            LogUtils.Logo();
+            LogUtils.Log("Options:\n1. Spotify and PC Stats || 2. Animated ClanTag (Must Edit CustomName.txt) || 3. SpaceBar Counter");
+            var s = Console.ReadLine();
+            switch (s)
+            {
+                case "1":
+                    UpdateOSC();
+                    break;
+                case "2":
+                    ClanTagChanger(File.ReadAllText(Environment.CurrentDirectory + "\\CustomName.txt"));
+                    break;
+                case "4":
+                    _hookID = SetHook(_proc);
+                    Timer t = new Timer(Send, null, 0, 1500);
+
+                    Application.Run();
+                    
+                    break;
+                default:
+                    Redo();
+                    break;
+            }
+        }
+    }
+}

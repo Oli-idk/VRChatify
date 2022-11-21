@@ -1,9 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Colorful;
 using Console = Colorful.Console;
 
 namespace VRCOSCUtils
@@ -21,21 +16,28 @@ namespace VRCOSCUtils
             Console.Write("] ");
 
             Console.Write("[");
-            Console.Write("VRCOSC", System.Drawing.Color.Green);
+            Console.Write("VRChatify", System.Drawing.Color.Green);
             Console.Write("] ");
             Console.Write(Message);
             Console.WriteLine();
         }
         public static void Logo()
         {
-            Console.WriteLine("█░█ █▀█ █▀▀ █▀█ █▀ █▀▀ █▀ █▀█ █▀█ ▀█▀ █ █▀▀ █▄█", System.Drawing.Color.Green);
-            Console.WriteLine("▀▄▀ █▀▄ █▄▄ █▄█ ▄█ █▄▄ ▄█ █▀▀ █▄█ ░█░ █ █▀░ ░█░", System.Drawing.Color.Green);
+
+            Console.WriteLine("██    ██ ██████   ██████ ██   ██  █████  ████████ ██ ███████ ██    ██", System.Drawing.Color.Green);
+            Console.WriteLine("██    ██ ██   ██ ██      ██   ██ ██   ██    ██    ██ ██       ██  ██ ", System.Drawing.Color.Green);
+            Console.WriteLine("██    ██ ██████  ██      ███████ ███████    ██    ██ █████     ████  ", System.Drawing.Color.Green);
+            Console.WriteLine(" ██  ██  ██   ██ ██      ██   ██ ██   ██    ██    ██ ██         ██   ", System.Drawing.Color.Green);
+            Console.WriteLine("  ████   ██   ██  ██████ ██   ██ ██   ██    ██    ██ ██         ██   ", System.Drawing.Color.Green);
         }
         public static void Clear()
         {
             Console.Clear();
-            Console.WriteLine("█░█ █▀█ █▀▀ █▀█ █▀ █▀▀ █▀ █▀█ █▀█ ▀█▀ █ █▀▀ █▄█", System.Drawing.Color.Green);
-            Console.WriteLine("▀▄▀ █▀▄ █▄▄ █▄█ ▄█ █▄▄ ▄█ █▀▀ █▄█ ░█░ █ █▀░ ░█░", System.Drawing.Color.Green);
+            Console.WriteLine("██    ██ ██████   ██████ ██   ██  █████  ████████ ██ ███████ ██    ██", System.Drawing.Color.Green);
+            Console.WriteLine("██    ██ ██   ██ ██      ██   ██ ██   ██    ██    ██ ██       ██  ██ ", System.Drawing.Color.Green);
+            Console.WriteLine("██    ██ ██████  ██      ███████ ███████    ██    ██ █████     ████  ", System.Drawing.Color.Green);
+            Console.WriteLine(" ██  ██  ██   ██ ██      ██   ██ ██   ██    ██    ██ ██         ██   ", System.Drawing.Color.Green);
+            Console.WriteLine("  ████   ██   ██  ██████ ██   ██ ██   ██    ██    ██ ██         ██   ", System.Drawing.Color.Green);
 
         }
     }
