@@ -1,20 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using VRChatify;
 using System.Timers;
+using System.Reflection;
+
 namespace VRChatify
 {
     public partial class MainWindow : Form
     {
         private static System.Timers.Timer spotifyTimer;
-        private static string oscText = "Just Started VRChatify";
+        private static string oscText = "{SONG} - {ARTIST} | CPU: {CPU}% | RAM: {RAM}% | GPU: {GPU}% | Time: {TIME}";
         public MainWindow()
         {
             InitializeComponent();
@@ -22,27 +16,28 @@ namespace VRChatify
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            this.Text = "VRChatify";
+            //set window title to app version
+            this.Text = $"VRChatify: {VRChatify.Version}";
         }
 
-        private void presenceToggle_CheckedChanged(object sender, EventArgs e)
+        private void PresenceToggle_CheckedChanged(object sender, EventArgs e)
         {
             if (presenceToggle.Checked)
             {
-                VRChatifyUtils.InitRPC();
+                PresenceManager.InitRPC();
             }
             else
             {
-                VRChatifyUtils.KillRPC();
+                PresenceManager.KillRPC();
             }
         }
 
-        private void spotifyToggle_CheckedChanged(object sender, EventArgs e)
+        private void SpotifyToggle_CheckedChanged(object sender, EventArgs e)
         {
             //if checkbox checked start 5 second repeating timer else stop it
             if (spotifyToggle.Checked)
             {
-                VRChatify.UpdateOSC(oscText);
+                VRChatify.SendChatMessage(oscText);
                 SetTimer();
             }
             else
@@ -65,19 +60,45 @@ namespace VRChatify
         private static void OnTimedEvent(Object source, ElapsedEventArgs e)
         {
             var oscMsg = oscText
-                .Replace("{SPOTIFY}", VRChatify.GetSpotifySong())
-                .Replace("{CPU}", Math.Round(VRChatify.GetCurrentCpuUsage()).ToString())
+                .Replace("{SONG}", VRChatify.GetSongName())
+                .Replace("{ARTIST}", VRChatify.GetSongArtist())
+                .Replace("{CPU}", Math.Round(VRChatify.GetCpuUsage()).ToString())
                 .Replace("{GPU}", Math.Round(VRChatify.GetGPUUsage()).ToString())
                 .Replace("{RAM}", VRChatify.GetRamUsage().ToString())
                 .Replace("{TIME}", DateTime.Now.ToString("h:mm:ss tt"));
-            VRChatify.UpdateOSC(oscMsg);
+            VRChatify.SendChatMessage(oscMsg);
         }
 
-        private void textBox1_TextChanged(object sender, EventArgs e)
+        private void OSCMessage_TextChanged(object sender, EventArgs e)
         {
-            //replace {CPU} with Math.Round(GetCurrentCpuUsage())
+            oscText = oscMessage.Text;
+        }
 
-            oscText = textBox1.Text;
+        private void PresenceUpdateButton_Click(object sender, EventArgs e)
+        {
+            PresenceManager.UpdateDetails(presenceDetails.Text);
+        }
+
+        private void ForceUpdateSessions_Click(object sender, EventArgs e) => UpdateSessionList();
+
+        public void DynamicButton_Click(object sender, EventArgs e)
+        {
+        }
+
+        public void UpdateSessionList()
+        {
+            SessionHolder.Controls.Clear();
+            foreach (var item in VRChatify.GenerateSessionButtons())
+            {
+                VRChatifyUtils.DebugLog("Adding Buton");
+                SessionHolder.Controls.Add(item);
+                VRChatifyUtils.DebugLog("Added Button");
+            }
+        }
+
+        private void DebugLogging_CheckedChanged(object sender, EventArgs e)
+        {
+            VRChatify.debugging = DebugLogging.Checked;
         }
     }
 }
