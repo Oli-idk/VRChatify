@@ -30,7 +30,7 @@
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainWindow));
             this.presenceToggle = new System.Windows.Forms.CheckBox();
-            this.spotifyToggle = new System.Windows.Forms.CheckBox();
+            this.OSCToggle = new System.Windows.Forms.CheckBox();
             this.oscMessageLabel = new System.Windows.Forms.Label();
             this.oscMessage = new System.Windows.Forms.TextBox();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
@@ -39,10 +39,12 @@
             this.label1 = new System.Windows.Forms.Label();
             this.presenceDetails = new System.Windows.Forms.TextBox();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
+            this.SessionHolder = new System.Windows.Forms.GroupBox();
             this.ForceUpdateSessions = new System.Windows.Forms.Button();
             this.Sessions = new System.Windows.Forms.ListBox();
-            this.SessionHolder = new System.Windows.Forms.GroupBox();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
+            this.ClanTagLabel = new System.Windows.Forms.Label();
+            this.ClanTag = new System.Windows.Forms.TextBox();
             this.DebugLogging = new System.Windows.Forms.CheckBox();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
@@ -63,23 +65,23 @@
             this.presenceToggle.UseVisualStyleBackColor = false;
             this.presenceToggle.CheckedChanged += new System.EventHandler(this.PresenceToggle_CheckedChanged);
             // 
-            // spotifyToggle
+            // OSCToggle
             // 
-            this.spotifyToggle.AutoSize = true;
-            this.spotifyToggle.ForeColor = System.Drawing.SystemColors.ControlLight;
-            this.spotifyToggle.Location = new System.Drawing.Point(9, 19);
-            this.spotifyToggle.Name = "spotifyToggle";
-            this.spotifyToggle.Size = new System.Drawing.Size(122, 17);
-            this.spotifyToggle.TabIndex = 2;
-            this.spotifyToggle.Text = "OSC Message Send";
-            this.spotifyToggle.UseVisualStyleBackColor = true;
-            this.spotifyToggle.CheckedChanged += new System.EventHandler(this.SpotifyToggle_CheckedChanged);
+            this.OSCToggle.AutoSize = true;
+            this.OSCToggle.ForeColor = System.Drawing.SystemColors.ControlLight;
+            this.OSCToggle.Location = new System.Drawing.Point(9, 19);
+            this.OSCToggle.Name = "OSCToggle";
+            this.OSCToggle.Size = new System.Drawing.Size(122, 17);
+            this.OSCToggle.TabIndex = 2;
+            this.OSCToggle.Text = "OSC Message Send";
+            this.OSCToggle.UseVisualStyleBackColor = true;
+            this.OSCToggle.CheckedChanged += new System.EventHandler(this.OSCToggle_CheckedChanged);
             // 
             // oscMessageLabel
             // 
             this.oscMessageLabel.AutoSize = true;
             this.oscMessageLabel.ForeColor = System.Drawing.SystemColors.ControlLight;
-            this.oscMessageLabel.Location = new System.Drawing.Point(6, 39);
+            this.oscMessageLabel.Location = new System.Drawing.Point(7, 39);
             this.oscMessageLabel.Name = "oscMessageLabel";
             this.oscMessageLabel.Size = new System.Drawing.Size(75, 13);
             this.oscMessageLabel.TabIndex = 3;
@@ -92,16 +94,17 @@
             this.oscMessage.Location = new System.Drawing.Point(6, 55);
             this.oscMessage.Multiline = true;
             this.oscMessage.Name = "oscMessage";
-            this.oscMessage.Size = new System.Drawing.Size(228, 42);
+            this.oscMessage.Size = new System.Drawing.Size(262, 54);
             this.oscMessage.TabIndex = 4;
-            this.oscMessage.Text = "{SONG} - {ARTIST} | CPU: {CPU}% | RAM: {RAM}% | GPU: {GPU}% | Time: {TIME}";
+            this.oscMessage.Text = "{SONG} - {ARTIST} | CPU: {CPU}% | RAM: {RAM}% | GPU: {GPU}% | Time: {TIME} | {CLA" +
+    "NTAG}";
             this.oscMessage.TextChanged += new System.EventHandler(this.OSCMessage_TextChanged);
             // 
             // groupBox1
             // 
             this.groupBox1.Controls.Add(this.oscMessageLabel);
             this.groupBox1.Controls.Add(this.oscMessage);
-            this.groupBox1.Controls.Add(this.spotifyToggle);
+            this.groupBox1.Controls.Add(this.OSCToggle);
             this.groupBox1.ForeColor = System.Drawing.SystemColors.ControlLight;
             this.groupBox1.Location = new System.Drawing.Point(12, 12);
             this.groupBox1.Name = "groupBox1";
@@ -164,6 +167,14 @@
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "Session List";
             // 
+            // SessionHolder
+            // 
+            this.SessionHolder.Location = new System.Drawing.Point(6, 19);
+            this.SessionHolder.Name = "SessionHolder";
+            this.SessionHolder.Size = new System.Drawing.Size(187, 182);
+            this.SessionHolder.TabIndex = 2;
+            this.SessionHolder.TabStop = false;
+            // 
             // ForceUpdateSessions
             // 
             this.ForceUpdateSessions.ForeColor = System.Drawing.SystemColors.ControlText;
@@ -183,16 +194,10 @@
             this.Sessions.Size = new System.Drawing.Size(187, 147);
             this.Sessions.TabIndex = 0;
             // 
-            // SessionHolder
-            // 
-            this.SessionHolder.Location = new System.Drawing.Point(6, 19);
-            this.SessionHolder.Name = "SessionHolder";
-            this.SessionHolder.Size = new System.Drawing.Size(187, 182);
-            this.SessionHolder.TabIndex = 2;
-            this.SessionHolder.TabStop = false;
-            // 
             // groupBox4
             // 
+            this.groupBox4.Controls.Add(this.ClanTagLabel);
+            this.groupBox4.Controls.Add(this.ClanTag);
             this.groupBox4.Controls.Add(this.DebugLogging);
             this.groupBox4.ForeColor = System.Drawing.SystemColors.ControlLight;
             this.groupBox4.Location = new System.Drawing.Point(12, 254);
@@ -201,6 +206,24 @@
             this.groupBox4.TabIndex = 8;
             this.groupBox4.TabStop = false;
             this.groupBox4.Text = "Settings";
+            // 
+            // ClanTagLabel
+            // 
+            this.ClanTagLabel.AutoSize = true;
+            this.ClanTagLabel.Location = new System.Drawing.Point(9, 40);
+            this.ClanTagLabel.Name = "ClanTagLabel";
+            this.ClanTagLabel.Size = new System.Drawing.Size(50, 13);
+            this.ClanTagLabel.TabIndex = 5;
+            this.ClanTagLabel.Text = "Clan Tag";
+            // 
+            // ClanTag
+            // 
+            this.ClanTag.Location = new System.Drawing.Point(9, 56);
+            this.ClanTag.Name = "ClanTag";
+            this.ClanTag.Size = new System.Drawing.Size(122, 20);
+            this.ClanTag.TabIndex = 4;
+            this.ClanTag.Text = "VRChatify";
+            this.ClanTag.TextChanged += new System.EventHandler(this.ClanTag_TextChanged);
             // 
             // DebugLogging
             // 
@@ -241,7 +264,7 @@
         #endregion
 
         private System.Windows.Forms.CheckBox presenceToggle;
-        private System.Windows.Forms.CheckBox spotifyToggle;
+        private System.Windows.Forms.CheckBox OSCToggle;
         private System.Windows.Forms.Label oscMessageLabel;
         private System.Windows.Forms.TextBox oscMessage;
         private System.Windows.Forms.GroupBox groupBox1;
@@ -255,5 +278,7 @@
         private System.Windows.Forms.GroupBox SessionHolder;
         private System.Windows.Forms.GroupBox groupBox4;
         private System.Windows.Forms.CheckBox DebugLogging;
+        private System.Windows.Forms.Label ClanTagLabel;
+        private System.Windows.Forms.TextBox ClanTag;
     }
 }
