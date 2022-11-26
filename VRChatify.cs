@@ -7,20 +7,22 @@ using System.Windows.Forms;
 using System.Threading.Tasks;
 using WindowsMediaController;
 using static WindowsMediaController.MediaManager;
+using Windows.Media;
+using Windows.Storage.Streams;
 
 namespace VRChatify
 {
     public static class VRChatify
     {
         public static bool debugging = false;
-        public static string Version = "1.0.1";
+        public static string Version = "1.0.2";
         public static UDPSender oscSender;
         public static UDPListener oscReceiver;
         private static readonly MediaManager mediaManager = new MediaManager();
-#pragma warning disable CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
+        private static MainWindow mainWindow;
+        #nullable enable
         private static MediaSession? currentSession = null;
-#pragma warning restore CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
-
+        #nullable disable
         public static string CurrentSongCheck = null;
 
         public static string CurrentSong = null;
@@ -44,24 +46,42 @@ namespace VRChatify
             oscSender = new UDPSender("127.0.0.1", 9000);
             oscReceiver = new UDPListener(9001, OnOscPacket);
             mediaManager.Start();
-            mediaManager.OnAnySessionOpened += MediaManager_OnAnySessionOpened;
-            mediaManager.OnAnySessionClosed += MediaManager_OnAnySessionClosed;
             VRChatifyUtils.Logo();
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new MainWindow());
+            mainWindow = new MainWindow();
+            mediaManager.OnAnySessionOpened += MediaManager_OnAnySessionOpened;
+            mediaManager.OnAnySessionClosed += MediaManager_OnAnySessionClosed;
+            Application.Run(mainWindow);
         }
 
         private static void MediaManager_OnAnySessionOpened(MediaSession mediaSession)
         {
             VRChatifyUtils.DebugLog($"Session Opened: {mediaSession.Id}");
-            GenerateSessionButtons();
+            mainWindow.UpdateSessionList();
         }
-
+        
         private static void MediaManager_OnAnySessionClosed(MediaSession mediaSession)
         {
             VRChatifyUtils.DebugLog($"Session Closed: {mediaSession.Id}");
-            GenerateSessionButtons();
+            mainWindow.UpdateSessionList();
+        }
+        
+        private static MediaSession GetCurrentSession()
+        {
+            if (currentSession == null)
+            {
+                try
+                {
+                    return currentSession = mediaManager.CurrentMediaSessions.First().Value;
+                }
+                catch (InvalidOperationException)
+                {
+                    VRChatifyUtils.DebugLog("No session found");
+                    return null;
+                }
+            }
+            return currentSession;
         }
 
         public static List<Button> GenerateSessionButtons()
@@ -98,11 +118,7 @@ namespace VRChatify
         
         public static string GetSongName()
         {
-            if (currentSession == null)
-            {
-                currentSession = mediaManager.CurrentMediaSessions.First().Value;
-            }
-            var songInfo = currentSession.ControlSession.TryGetMediaPropertiesAsync().GetAwaiter().GetResult();
+            var songInfo = GetCurrentSession()?.ControlSession.TryGetMediaPropertiesAsync().GetAwaiter().GetResult();
             if (songInfo != null)
             {
                 return songInfo.Title;
@@ -112,11 +128,7 @@ namespace VRChatify
 
         public static string GetSongArtist()
         {
-            if (currentSession == null)
-            {
-                currentSession = mediaManager.CurrentMediaSessions.First().Value;
-            }
-            var songInfo = currentSession.ControlSession.TryGetMediaPropertiesAsync().GetAwaiter().GetResult();
+            var songInfo = GetCurrentSession()?.ControlSession.TryGetMediaPropertiesAsync().GetAwaiter().GetResult();
             if (songInfo != null)
             {
                 return songInfo.Artist;
@@ -149,6 +161,7 @@ namespace VRChatify
                         currentSession = mediaManager.CurrentMediaSessions.First().Value;
                     }
                     await currentSession.ControlSession.TrySkipPreviousAsync();
+                    await currentSession.ControlSession.TrySkipPreviousAsync();
                 }
                 else if (address == "/avatar/parameters/skip")
                 {
@@ -166,7 +179,7 @@ namespace VRChatify
                     {
                         currentSession = mediaManager.CurrentMediaSessions.First().Value;
                     }
-                    VRChatifyUtils.DebugLog(currentSession.ControlSession.GetPlaybackInfo().PlaybackStatus.ToString() + " AAA");
+                    await currentSession.ControlSession.TryTogglePlayPauseAsync();
                 }
                 return Task.CompletedTask;
             });

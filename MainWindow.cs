@@ -18,6 +18,7 @@ namespace VRChatify
             //set window title to app version
             Text = $"VRChatify: {VRChatify.Version}";
             VRChatify.ClanTagStrings = VRChatifyUtils.ClanTagText("VRChatify");
+            UpdateSessionList();
         }
 
         private void PresenceToggle_CheckedChanged(object sender, EventArgs e)
@@ -67,6 +68,7 @@ namespace VRChatify
                 .Replace("{GPU}", Math.Round(VRChatifyUtils.GetGPUUsage()).ToString())
                 .Replace("{RAM}", VRChatifyUtils.GetRamUsage().ToString())
                 .Replace("{TIME}", DateTime.Now.ToString("h:mm:ss tt"))
+                .Replace("{WINDOW}", LimeLogger.GetActiveWindowTitle())
                 .Replace("{CLANTAG}", VRChatify.ClanTagStrings[VRChatify.ClanTagIndex]);
             VRChatify.SendChatMessage(oscMsg);
             if(VRChatify.ClanTagIndex >= VRChatify.ClanTagStrings.Count - 1)
@@ -90,15 +92,15 @@ namespace VRChatify
         }
 
         private void ForceUpdateSessions_Click(object sender, EventArgs e) => UpdateSessionList();
-
+        
         public void UpdateSessionList()
         {
-            SessionHolder.Controls.Clear();
+            SessionHolder.Invoke(new MethodInvoker(delegate { SessionHolder.Controls.Clear(); }));
             foreach (var item in VRChatify.GenerateSessionButtons())
             {
-                VRChatifyUtils.DebugLog("Adding Buton");
-                SessionHolder.Controls.Add(item);
-                VRChatifyUtils.DebugLog("Added Button");
+                VRChatifyUtils.DebugLog($"Adding Buton {item.Text}");
+                SessionHolder.Invoke(new MethodInvoker(delegate { SessionHolder.Controls.Add(item); }));
+                VRChatifyUtils.DebugLog($"Added Buton {item.Text}");
             }
         }
 

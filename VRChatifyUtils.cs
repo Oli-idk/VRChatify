@@ -115,9 +115,10 @@ namespace VRChatify
 
                 return result;
             }
-            catch
+            catch(Exception e)
             {
                 Error("Grabbing gpu usage");
+                Error(e.Message);
                 return 0f;
             }
         }
