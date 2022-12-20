@@ -166,7 +166,6 @@ namespace VRChatify
             }
             return SpotifyProcess.MainWindowTitle;
         }
-
         public static List<string> ClanTagText(string tag)
         {
             List<string> strings = new List<string>();
@@ -182,6 +181,43 @@ namespace VRChatify
             strings2.Reverse();
             strings.AddRange(strings2);
             return strings;
+        }
+        public static string GetActiveWindowTitle()
+        {
+            try
+            {
+                IntPtr hwnd = GetForegroundWindow();
+                GetWindowThreadProcessId(hwnd, out uint pid);
+                Process p = Process.GetProcessById((int)pid);
+                string title = p.MainWindowTitle;
+                if (string.IsNullOrWhiteSpace(title))
+                    title = p.ProcessName;
+                return title;
+            }
+            catch (Exception)
+            {
+                return "???";
+            }
+        }
+
+        [DllImport("user32.dll")]
+        static extern IntPtr GetForegroundWindow();
+
+        [DllImport("user32.dll", SetLastError = true)]
+        static extern uint GetWindowThreadProcessId(IntPtr hWnd, out uint lpdwProcessId);
+
+        public static String GetComputerName()
+        {
+            ManagementClass mc = new ManagementClass("Win32_ComputerSystem");
+            ManagementObjectCollection moc = mc.GetInstances();
+            String info = String.Empty;
+            foreach (ManagementObject mo in moc)
+            {
+                info = (string)mo["Name"];
+                //mo.Properties["Name"].Value.ToString();
+                //break;
+            }
+            return info;
         }
     }
 }

@@ -1,14 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
 using CoreOSC;
 using System.Windows.Forms;
 using System.Threading.Tasks;
-using WindowsMediaController;
-using static WindowsMediaController.MediaManager;
-using Windows.Media;
-using Windows.Storage.Streams;
 
 namespace VRChatify
 {
@@ -18,11 +12,9 @@ namespace VRChatify
         public static string Version = "1.0.2";
         public static UDPSender oscSender;
         public static UDPListener oscReceiver;
-        private static readonly MediaManager mediaManager = new MediaManager();
         private static MainWindow mainWindow;
-        #nullable enable
-        private static MediaSession? currentSession = null;
-        #nullable disable
+        public static VMediaManager mediaManager;
+
         public static string CurrentSongCheck = null;
 
         public static string CurrentSong = null;
@@ -45,43 +37,13 @@ namespace VRChatify
         {
             oscSender = new UDPSender("127.0.0.1", 9000);
             oscReceiver = new UDPListener(9001, OnOscPacket);
-            mediaManager.Start();
+            mediaManager = new VMediaManager();
+            mediaManager.Init();
             VRChatifyUtils.Logo();
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             mainWindow = new MainWindow();
-            mediaManager.OnAnySessionOpened += MediaManager_OnAnySessionOpened;
-            mediaManager.OnAnySessionClosed += MediaManager_OnAnySessionClosed;
             Application.Run(mainWindow);
-        }
-
-        private static void MediaManager_OnAnySessionOpened(MediaSession mediaSession)
-        {
-            VRChatifyUtils.DebugLog($"Session Opened: {mediaSession.Id}");
-            mainWindow.UpdateSessionList();
-        }
-        
-        private static void MediaManager_OnAnySessionClosed(MediaSession mediaSession)
-        {
-            VRChatifyUtils.DebugLog($"Session Closed: {mediaSession.Id}");
-            mainWindow.UpdateSessionList();
-        }
-        
-        private static MediaSession GetCurrentSession()
-        {
-            if (currentSession == null)
-            {
-                try
-                {
-                    return currentSession = mediaManager.CurrentMediaSessions.First().Value;
-                }
-                catch (InvalidOperationException)
-                {
-                    VRChatifyUtils.DebugLog("No session found");
-                    return null;
-                }
-            }
-            return currentSession;
         }
 
         public static List<Button> GenerateSessionButtons()
@@ -89,7 +51,7 @@ namespace VRChatify
             List<Button> buttons = new List<Button>();
             int BaseLocX = 3;
             int BaseLocY = 15;
-            foreach (var session in mediaManager.CurrentMediaSessions)
+            foreach (var session in mediaManager.GetMediaManager().CurrentMediaSessions)
             {
                 VRChatifyUtils.DebugLog("Generating Button");
                 Button button = new Button
@@ -112,28 +74,8 @@ namespace VRChatify
         private static void DynamicButton_Click(object sender, EventArgs e)
         {
             Button btn = (Button)sender;
-            currentSession = mediaManager.CurrentMediaSessions[btn.Name];
-            VRChatifyUtils.DebugLog($"Current session set to: {currentSession.Id}");
-        }
-        
-        public static string GetSongName()
-        {
-            var songInfo = GetCurrentSession()?.ControlSession.TryGetMediaPropertiesAsync().GetAwaiter().GetResult();
-            if (songInfo != null)
-            {
-                return songInfo.Title;
-            }
-            return "Unable to get Title";
-        }
-
-        public static string GetSongArtist()
-        {
-            var songInfo = GetCurrentSession()?.ControlSession.TryGetMediaPropertiesAsync().GetAwaiter().GetResult();
-            if (songInfo != null)
-            {
-                return songInfo.Artist;
-            }
-            return "Unable to get Author";
+            mediaManager.setCurrentSession(mediaManager.GetMediaManager().CurrentMediaSessions[btn.Name]);
+            VRChatifyUtils.DebugLog($"Current session set to: {btn.Name}");
         }
 
         private static void OnOscPacket(OscPacket packet)
@@ -156,34 +98,27 @@ namespace VRChatify
                 if (address == "/avatar/parameters/back")
                 {
                     VRChatifyUtils.DebugLog("Back");
-                    if (currentSession == null)
-                    {
-                        currentSession = mediaManager.CurrentMediaSessions.First().Value;
-                    }
-                    await currentSession.ControlSession.TrySkipPreviousAsync();
-                    await currentSession.ControlSession.TrySkipPreviousAsync();
+                    await mediaManager.GetCurrentSession()?.ControlSession.TrySkipPreviousAsync();
                 }
                 else if (address == "/avatar/parameters/skip")
                 {
                     VRChatifyUtils.DebugLog("Skip");
-                    if (currentSession == null)
-                    {
-                        currentSession = mediaManager.CurrentMediaSessions.First().Value;
-                    }
-                    await currentSession.ControlSession.TrySkipNextAsync();
+                    await mediaManager.GetCurrentSession()?.ControlSession.TrySkipNextAsync();
                 }
                 else if (address == "/avatar/parameters/paused")
                 {
                     VRChatifyUtils.DebugLog("paused");
-                    if (currentSession == null)
-                    {
-                        currentSession = mediaManager.CurrentMediaSessions.First().Value;
-                    }
-                    await currentSession.ControlSession.TryTogglePlayPauseAsync();
+                    await mediaManager.GetCurrentSession()?.ControlSession.TryTogglePlayPauseAsync();
                 }
                 return Task.CompletedTask;
             });
         }
+
+        public static MainWindow GetMainWindow()
+        {
+            return mainWindow;
+        }
+        
 
     }
 }

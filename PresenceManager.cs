@@ -7,7 +7,7 @@ namespace VRChatify
         private static RichPresence presence = new RichPresence()
         {
             Details = "Using VRchatify",
-            State = "Created by AkiraDev#5057           ",
+            State = "Created by AkiraDev#5057",
             Timestamps = Timestamps.Now,
             Assets = new Assets()
             {

@@ -38,7 +38,17 @@ namespace VRChatify
             //if checkbox checked start 5 second repeating timer else stop it
             if (OSCToggle.Checked)
             {
-                VRChatify.SendChatMessage(oscText);
+                var oscMsg = oscText
+                    .Replace("{SONG}", VRChatify.mediaManager.GetSongName())
+                    .Replace("{ARTIST}", VRChatify.mediaManager.GetSongArtist())
+                    .Replace("{SPOTIFY}", VRChatifyUtils.GetSpotifySong())
+                    .Replace("{CPU}", Math.Round(VRChatifyUtils.GetCpuUsage()).ToString())
+                    .Replace("{GPU}", Math.Round(VRChatifyUtils.GetGPUUsage()).ToString())
+                    .Replace("{RAM}", VRChatifyUtils.GetRamUsage().ToString())
+                    .Replace("{TIME}", DateTime.Now.ToString("h:mm:ss tt"))
+                    .Replace("{WINDOWno}", VRChatifyUtils.GetActiveWindowTitle())
+                    .Replace("{CLANTAG}", VRChatify.ClanTagStrings[VRChatify.ClanTagIndex]);
+                VRChatify.SendChatMessage(oscMsg);
                 SetTimer();
             }
             else
@@ -60,15 +70,16 @@ namespace VRChatify
 
         private static void OnTimedEvent(Object source, ElapsedEventArgs e)
         {
+            VRChatifyUtils.DebugLog(VRChatifyUtils.GetComputerName());
             var oscMsg = oscText
-                .Replace("{SONG}", VRChatify.GetSongName())
-                .Replace("{ARTIST}", VRChatify.GetSongArtist())
+                .Replace("{SONG}", VRChatify.mediaManager.GetSongName())
+                .Replace("{ARTIST}", VRChatify.mediaManager.GetSongArtist())
                 .Replace("{SPOTIFY}", VRChatifyUtils.GetSpotifySong())
                 .Replace("{CPU}", Math.Round(VRChatifyUtils.GetCpuUsage()).ToString())
                 .Replace("{GPU}", Math.Round(VRChatifyUtils.GetGPUUsage()).ToString())
                 .Replace("{RAM}", VRChatifyUtils.GetRamUsage().ToString())
                 .Replace("{TIME}", DateTime.Now.ToString("h:mm:ss tt"))
-                .Replace("{WINDOW}", LimeLogger.GetActiveWindowTitle())
+                .Replace("{WINDOW}", VRChatifyUtils.GetActiveWindowTitle())
                 .Replace("{CLANTAG}", VRChatify.ClanTagStrings[VRChatify.ClanTagIndex]);
             VRChatify.SendChatMessage(oscMsg);
             if(VRChatify.ClanTagIndex >= VRChatify.ClanTagStrings.Count - 1)
