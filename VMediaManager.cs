@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using static WindowsMediaController.MediaManager;
 using WindowsMediaController;
+using static WindowsMediaController.MediaManager;
 
 namespace VRChatify
 {
@@ -80,6 +77,26 @@ namespace VRChatify
                 return songInfo.AlbumTitle;
             }
             return "Unable to get Author";
+        }
+
+        public TimeSpan GetSongDuration()
+        {
+            var timeline = GetCurrentSession()?.ControlSession.GetTimelineProperties();
+            if(timeline != null)
+            {
+                return timeline.EndTime;
+            }
+            return new TimeSpan();
+        }
+
+        public TimeSpan GetCurrentSongTime()
+        {
+            var timeline = GetCurrentSession()?.ControlSession.GetTimelineProperties();
+            if (timeline != null)
+            {
+                return timeline.Position;
+            }
+            return new TimeSpan();
         }
 
         public string GetAlbumTrackCount()

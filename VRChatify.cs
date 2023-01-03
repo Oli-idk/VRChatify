@@ -9,7 +9,7 @@ namespace VRChatify
     public static class VRChatify
     {
         public static bool debugging = false;
-        public static string Version = "1.0.2";
+        public static string Version = "1.0.3";
         public static UDPSender oscSender;
         public static UDPListener oscReceiver;
         private static MainWindow mainWindow;

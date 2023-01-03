@@ -46,8 +46,11 @@ namespace VRChatify
                     .Replace("{GPU}", Math.Round(VRChatifyUtils.GetGPUUsage()).ToString())
                     .Replace("{RAM}", VRChatifyUtils.GetRamUsage().ToString())
                     .Replace("{TIME}", DateTime.Now.ToString("h:mm:ss tt"))
-                    .Replace("{WINDOWno}", VRChatifyUtils.GetActiveWindowTitle())
+                    .Replace("{WINDOW}", VRChatifyUtils.GetActiveWindowTitle())
+                    .Replace("{DURATION}", VRChatify.mediaManager.GetSongDuration().ToString(@"mm\:ss"))
+                    .Replace("{POSITION}", VRChatify.mediaManager.GetCurrentSongTime().ToString(@"mm\:ss"))
                     .Replace("{CLANTAG}", VRChatify.ClanTagStrings[VRChatify.ClanTagIndex]);
+                    
                 VRChatify.SendChatMessage(oscMsg);
                 SetTimer();
             }
@@ -68,19 +71,20 @@ namespace VRChatify
             OSCTimer.Enabled = true;
         }
 
-        private static void OnTimedEvent(Object source, ElapsedEventArgs e)
-        {
-            VRChatifyUtils.DebugLog(VRChatifyUtils.GetComputerName());
+        private static void OnTimedEvent(object source, ElapsedEventArgs e)
+        {   
             var oscMsg = oscText
-                .Replace("{SONG}", VRChatify.mediaManager.GetSongName())
-                .Replace("{ARTIST}", VRChatify.mediaManager.GetSongArtist())
-                .Replace("{SPOTIFY}", VRChatifyUtils.GetSpotifySong())
-                .Replace("{CPU}", Math.Round(VRChatifyUtils.GetCpuUsage()).ToString())
-                .Replace("{GPU}", Math.Round(VRChatifyUtils.GetGPUUsage()).ToString())
-                .Replace("{RAM}", VRChatifyUtils.GetRamUsage().ToString())
-                .Replace("{TIME}", DateTime.Now.ToString("h:mm:ss tt"))
-                .Replace("{WINDOW}", VRChatifyUtils.GetActiveWindowTitle())
-                .Replace("{CLANTAG}", VRChatify.ClanTagStrings[VRChatify.ClanTagIndex]);
+                    .Replace("{SONG}", VRChatify.mediaManager.GetSongName())
+                    .Replace("{ARTIST}", VRChatify.mediaManager.GetSongArtist())
+                    .Replace("{SPOTIFY}", VRChatifyUtils.GetSpotifySong())
+                    .Replace("{CPU}", Math.Round(VRChatifyUtils.GetCpuUsage()).ToString())
+                    .Replace("{GPU}", Math.Round(VRChatifyUtils.GetGPUUsage()).ToString())
+                    .Replace("{RAM}", VRChatifyUtils.GetRamUsage().ToString())
+                    .Replace("{TIME}", DateTime.Now.ToString("h:mm:ss tt"))
+                    .Replace("{WINDOW}", VRChatifyUtils.GetActiveWindowTitle())
+                    .Replace("{DURATION}", VRChatify.mediaManager.GetSongDuration().ToString(@"mm\:ss"))
+                    .Replace("{POSITION}", VRChatify.mediaManager.GetCurrentSongTime().ToString(@"mm\:ss"))
+                    .Replace("{CLANTAG}", VRChatify.ClanTagStrings[VRChatify.ClanTagIndex]);
             VRChatify.SendChatMessage(oscMsg);
             if(VRChatify.ClanTagIndex >= VRChatify.ClanTagStrings.Count - 1)
             {
