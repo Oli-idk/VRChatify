@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Windows.Forms;
 using System.Timers;
-
+using AutoUpdaterDotNET;
 namespace VRChatify
 {
     public partial class MainWindow : Form
@@ -10,6 +10,8 @@ namespace VRChatify
         private static string oscText = Config.GetConfig("oscText") ?? "{SONG} - {ARTIST} | CPU: {CPU}% | RAM: {RAM}% | GPU: {GPU}% | Time: {TIME} | {CLANTAG}";
         public MainWindow()
         {
+            AutoUpdater.InstalledVersion = new Version(VRChatify.Version);
+            AutoUpdater.Start("https://projects.akiradev.xyz/VRChatify/AutoUpdateInfo.xml");
             InitializeComponent();
         }
 
