@@ -7,7 +7,7 @@ namespace VRChatify
     public partial class MainWindow : Form
     {
         private static System.Timers.Timer OSCTimer;
-        private static string oscText = "{SONG} - {ARTIST} | CPU: {CPU}% | RAM: {RAM}% | GPU: {GPU}% | Time: {TIME} | {CLANTAG}";
+        private static string oscText = Config.GetConfig("oscText") ?? "{SONG} - {ARTIST} | CPU: {CPU}% | RAM: {RAM}% | GPU: {GPU}% | Time: {TIME} | {CLANTAG}";
         public MainWindow()
         {
             InitializeComponent();
@@ -17,7 +17,9 @@ namespace VRChatify
         {
             //set window title to app version
             Text = $"VRChatify: {VRChatify.Version}";
-            VRChatify.ClanTagStrings = VRChatifyUtils.ClanTagText("VRChatify");
+            oscMessage.Text = oscText;
+            ClanTag.Text = Config.GetConfig("clantag") ?? "VRChatify";
+            VRChatify.ClanTagStrings = VRChatifyUtils.ClanTagText(ClanTag.Text);
             UpdateSessionList();
         }
 
@@ -46,6 +48,7 @@ namespace VRChatify
                     .Replace("{GPU}", Math.Round(VRChatifyUtils.GetGPUUsage()).ToString())
                     .Replace("{RAM}", VRChatifyUtils.GetRamUsage().ToString())
                     .Replace("{TIME}", DateTime.Now.ToString("h:mm:ss tt"))
+                    .Replace("{MTIME}", DateTime.Now.ToString("HH:mm"))
                     .Replace("{WINDOW}", VRChatifyUtils.GetActiveWindowTitle())
                     .Replace("{DURATION}", VRChatify.mediaManager.GetSongDuration().ToString(@"mm\:ss"))
                     .Replace("{POSITION}", VRChatify.mediaManager.GetCurrentSongTime().ToString(@"mm\:ss"))
@@ -81,6 +84,7 @@ namespace VRChatify
                     .Replace("{GPU}", Math.Round(VRChatifyUtils.GetGPUUsage()).ToString())
                     .Replace("{RAM}", VRChatifyUtils.GetRamUsage().ToString())
                     .Replace("{TIME}", DateTime.Now.ToString("h:mm:ss tt"))
+                    .Replace("{MTIME}", DateTime.Now.ToString("HH:mm"))
                     .Replace("{WINDOW}", VRChatifyUtils.GetActiveWindowTitle())
                     .Replace("{DURATION}", VRChatify.mediaManager.GetSongDuration().ToString(@"mm\:ss"))
                     .Replace("{POSITION}", VRChatify.mediaManager.GetCurrentSongTime().ToString(@"mm\:ss"))
@@ -98,6 +102,7 @@ namespace VRChatify
 
         private void OSCMessage_TextChanged(object sender, EventArgs e)
         {
+            Config.SetConfig("oscText", oscMessage.Text);
             oscText = oscMessage.Text;
         }
 
@@ -126,6 +131,11 @@ namespace VRChatify
 
         private void ClanTag_TextChanged(object sender, EventArgs e)
         {
+            Config.SetConfig("clantag", ClanTag.Text);
+            if(ClanTag.Text == "")
+            {
+                ClanTag.Text = " ";
+            }
             VRChatify.ClanTagStrings = VRChatifyUtils.ClanTagText(ClanTag.Text);
             VRChatify.ClanTagIndex = 0;
         }

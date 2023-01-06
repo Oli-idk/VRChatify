@@ -206,16 +206,14 @@ namespace VRChatify
         [DllImport("user32.dll", SetLastError = true)]
         static extern uint GetWindowThreadProcessId(IntPtr hWnd, out uint lpdwProcessId);
 
-        public static String GetComputerName()
+        public static string GetComputerName()
         {
             ManagementClass mc = new ManagementClass("Win32_ComputerSystem");
             ManagementObjectCollection moc = mc.GetInstances();
-            String info = String.Empty;
+            string info = string.Empty;
             foreach (ManagementObject mo in moc)
             {
                 info = (string)mo["Name"];
-                //mo.Properties["Name"].Value.ToString();
-                //break;
             }
             return info;
         }
