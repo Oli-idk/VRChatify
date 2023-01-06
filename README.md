@@ -9,3 +9,18 @@ A application that displays your pc stats and what you are listening to on spoti
 - https://github.com/lenoobwastaken/VRCOSCUtils
 # TODO List
 - IDK more stuff?
+
+
+# Placeholders
+- {SONG}: shows current song from selected media session
+- {ARTIST}: shows current artist from selected media session
+- {SPOTIFY}: shows spotify song and artist
+- {CPU}: CPU Usage
+- {GPU}: GPU Usage
+- {RAM}: Ram Usage
+- {TIME}: local time (12h)
+- {MTIME}: local time (24h)
+- {WINDOW}: Currently focused window
+- {DURATION}: song total duration
+- {POSITION}: song current positon
+- {CLANTAG}: clantag idk
