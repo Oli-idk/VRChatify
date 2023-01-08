@@ -28,6 +28,18 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.Windows.Forms.ListViewItem listViewItem1 = new System.Windows.Forms.ListViewItem("{SONG}: Current Song");
+            System.Windows.Forms.ListViewItem listViewItem2 = new System.Windows.Forms.ListViewItem("{ARTIST}: Songs Artist");
+            System.Windows.Forms.ListViewItem listViewItem3 = new System.Windows.Forms.ListViewItem("{SPOTIFY}: Shows spotifys current song/artist");
+            System.Windows.Forms.ListViewItem listViewItem4 = new System.Windows.Forms.ListViewItem("{CPU}: CPU Usage");
+            System.Windows.Forms.ListViewItem listViewItem5 = new System.Windows.Forms.ListViewItem("{GPU}: GPU Usage");
+            System.Windows.Forms.ListViewItem listViewItem6 = new System.Windows.Forms.ListViewItem("{RAM}: Ram Usage");
+            System.Windows.Forms.ListViewItem listViewItem7 = new System.Windows.Forms.ListViewItem("{TIME}: current time (12h)");
+            System.Windows.Forms.ListViewItem listViewItem8 = new System.Windows.Forms.ListViewItem("{MTIME}: current time (24h)");
+            System.Windows.Forms.ListViewItem listViewItem9 = new System.Windows.Forms.ListViewItem("{WINDOW}: Currently focused window");
+            System.Windows.Forms.ListViewItem listViewItem10 = new System.Windows.Forms.ListViewItem("{DURATION}: song total duration");
+            System.Windows.Forms.ListViewItem listViewItem11 = new System.Windows.Forms.ListViewItem("{POSITION}: song current positon");
+            System.Windows.Forms.ListViewItem listViewItem12 = new System.Windows.Forms.ListViewItem("{CLANTAG}: clantag idk");
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainWindow));
             this.presenceToggle = new System.Windows.Forms.CheckBox();
             this.OSCToggle = new System.Windows.Forms.CheckBox();
@@ -46,10 +58,13 @@
             this.ClanTagLabel = new System.Windows.Forms.Label();
             this.ClanTag = new System.Windows.Forms.TextBox();
             this.DebugLogging = new System.Windows.Forms.CheckBox();
+            this.Placeholders = new System.Windows.Forms.GroupBox();
+            this.listView1 = new System.Windows.Forms.ListView();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
             this.groupBox4.SuspendLayout();
+            this.Placeholders.SuspendLayout();
             this.SuspendLayout();
             // 
             // presenceToggle
@@ -162,7 +177,7 @@
             this.groupBox3.ForeColor = System.Drawing.SystemColors.ControlLight;
             this.groupBox3.Location = new System.Drawing.Point(292, 12);
             this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Size = new System.Drawing.Size(200, 236);
+            this.groupBox3.Size = new System.Drawing.Size(200, 342);
             this.groupBox3.TabIndex = 7;
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "Session List";
@@ -171,14 +186,14 @@
             // 
             this.SessionHolder.Location = new System.Drawing.Point(6, 19);
             this.SessionHolder.Name = "SessionHolder";
-            this.SessionHolder.Size = new System.Drawing.Size(187, 182);
+            this.SessionHolder.Size = new System.Drawing.Size(187, 288);
             this.SessionHolder.TabIndex = 2;
             this.SessionHolder.TabStop = false;
             // 
             // ForceUpdateSessions
             // 
             this.ForceUpdateSessions.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.ForceUpdateSessions.Location = new System.Drawing.Point(6, 207);
+            this.ForceUpdateSessions.Location = new System.Drawing.Point(7, 313);
             this.ForceUpdateSessions.Name = "ForceUpdateSessions";
             this.ForceUpdateSessions.Size = new System.Drawing.Size(187, 23);
             this.ForceUpdateSessions.TabIndex = 1;
@@ -236,12 +251,51 @@
             this.DebugLogging.UseVisualStyleBackColor = true;
             this.DebugLogging.CheckedChanged += new System.EventHandler(this.DebugLogging_CheckedChanged);
             // 
+            // Placeholders
+            // 
+            this.Placeholders.Controls.Add(this.listView1);
+            this.Placeholders.ForeColor = System.Drawing.SystemColors.ControlLight;
+            this.Placeholders.Location = new System.Drawing.Point(499, 13);
+            this.Placeholders.Name = "Placeholders";
+            this.Placeholders.Size = new System.Drawing.Size(269, 341);
+            this.Placeholders.TabIndex = 9;
+            this.Placeholders.TabStop = false;
+            this.Placeholders.Text = "Placeholders";
+            // 
+            // listView1
+            // 
+            this.listView1.BackColor = System.Drawing.SystemColors.WindowText;
+            this.listView1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.listView1.ForeColor = System.Drawing.SystemColors.Window;
+            this.listView1.HideSelection = false;
+            this.listView1.Items.AddRange(new System.Windows.Forms.ListViewItem[] {
+            listViewItem1,
+            listViewItem2,
+            listViewItem3,
+            listViewItem4,
+            listViewItem5,
+            listViewItem6,
+            listViewItem7,
+            listViewItem8,
+            listViewItem9,
+            listViewItem10,
+            listViewItem11,
+            listViewItem12});
+            this.listView1.Location = new System.Drawing.Point(3, 16);
+            this.listView1.Name = "listView1";
+            this.listView1.Size = new System.Drawing.Size(263, 322);
+            this.listView1.TabIndex = 0;
+            this.listView1.TileSize = new System.Drawing.Size(200, 30);
+            this.listView1.UseCompatibleStateImageBehavior = false;
+            this.listView1.View = System.Windows.Forms.View.Tile;
+            // 
             // MainWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.Black;
-            this.ClientSize = new System.Drawing.Size(658, 422);
+            this.ClientSize = new System.Drawing.Size(780, 368);
+            this.Controls.Add(this.Placeholders);
             this.Controls.Add(this.groupBox4);
             this.Controls.Add(this.groupBox3);
             this.Controls.Add(this.groupBox2);
@@ -257,6 +311,7 @@
             this.groupBox3.ResumeLayout(false);
             this.groupBox4.ResumeLayout(false);
             this.groupBox4.PerformLayout();
+            this.Placeholders.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -280,5 +335,7 @@
         private System.Windows.Forms.CheckBox DebugLogging;
         private System.Windows.Forms.Label ClanTagLabel;
         private System.Windows.Forms.TextBox ClanTag;
+        private System.Windows.Forms.GroupBox Placeholders;
+        private System.Windows.Forms.ListView listView1;
     }
 }
