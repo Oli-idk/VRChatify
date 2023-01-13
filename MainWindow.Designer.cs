@@ -34,12 +34,15 @@
             System.Windows.Forms.ListViewItem listViewItem4 = new System.Windows.Forms.ListViewItem("{CPU}: CPU Usage");
             System.Windows.Forms.ListViewItem listViewItem5 = new System.Windows.Forms.ListViewItem("{GPU}: GPU Usage");
             System.Windows.Forms.ListViewItem listViewItem6 = new System.Windows.Forms.ListViewItem("{RAM}: Ram Usage");
-            System.Windows.Forms.ListViewItem listViewItem7 = new System.Windows.Forms.ListViewItem("{TIME}: current time (12h)");
-            System.Windows.Forms.ListViewItem listViewItem8 = new System.Windows.Forms.ListViewItem("{MTIME}: current time (24h)");
-            System.Windows.Forms.ListViewItem listViewItem9 = new System.Windows.Forms.ListViewItem("{WINDOW}: Currently focused window");
-            System.Windows.Forms.ListViewItem listViewItem10 = new System.Windows.Forms.ListViewItem("{DURATION}: song total duration");
-            System.Windows.Forms.ListViewItem listViewItem11 = new System.Windows.Forms.ListViewItem("{POSITION}: song current positon");
-            System.Windows.Forms.ListViewItem listViewItem12 = new System.Windows.Forms.ListViewItem("{CLANTAG}: clantag idk");
+            System.Windows.Forms.ListViewItem listViewItem7 = new System.Windows.Forms.ListViewItem("{RAM-AVAILABLE}: Ram Available");
+            System.Windows.Forms.ListViewItem listViewItem8 = new System.Windows.Forms.ListViewItem("{RAM-CAPACITY}: Total Ram");
+            System.Windows.Forms.ListViewItem listViewItem9 = new System.Windows.Forms.ListViewItem("{RAM-USED}: Ram being used");
+            System.Windows.Forms.ListViewItem listViewItem10 = new System.Windows.Forms.ListViewItem("{TIME}: current time (12h)");
+            System.Windows.Forms.ListViewItem listViewItem11 = new System.Windows.Forms.ListViewItem("{MTIME}: current time (24h)");
+            System.Windows.Forms.ListViewItem listViewItem12 = new System.Windows.Forms.ListViewItem("{WINDOW}: Currently focused window");
+            System.Windows.Forms.ListViewItem listViewItem13 = new System.Windows.Forms.ListViewItem("{DURATION}: song total duration");
+            System.Windows.Forms.ListViewItem listViewItem14 = new System.Windows.Forms.ListViewItem("{POSITION}: song current positon");
+            System.Windows.Forms.ListViewItem listViewItem15 = new System.Windows.Forms.ListViewItem("{CLANTAG}: clantag idk");
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainWindow));
             this.presenceToggle = new System.Windows.Forms.CheckBox();
             this.OSCToggle = new System.Windows.Forms.CheckBox();
@@ -60,6 +63,7 @@
             this.DebugLogging = new System.Windows.Forms.CheckBox();
             this.Placeholders = new System.Windows.Forms.GroupBox();
             this.listView1 = new System.Windows.Forms.ListView();
+            this.groupBox5 = new System.Windows.Forms.GroupBox();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -177,7 +181,7 @@
             this.groupBox3.ForeColor = System.Drawing.SystemColors.ControlLight;
             this.groupBox3.Location = new System.Drawing.Point(292, 12);
             this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Size = new System.Drawing.Size(200, 342);
+            this.groupBox3.Size = new System.Drawing.Size(200, 115);
             this.groupBox3.TabIndex = 7;
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "Session List";
@@ -186,14 +190,14 @@
             // 
             this.SessionHolder.Location = new System.Drawing.Point(6, 19);
             this.SessionHolder.Name = "SessionHolder";
-            this.SessionHolder.Size = new System.Drawing.Size(187, 288);
+            this.SessionHolder.Size = new System.Drawing.Size(187, 61);
             this.SessionHolder.TabIndex = 2;
             this.SessionHolder.TabStop = false;
             // 
             // ForceUpdateSessions
             // 
             this.ForceUpdateSessions.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.ForceUpdateSessions.Location = new System.Drawing.Point(7, 313);
+            this.ForceUpdateSessions.Location = new System.Drawing.Point(6, 86);
             this.ForceUpdateSessions.Name = "ForceUpdateSessions";
             this.ForceUpdateSessions.Size = new System.Drawing.Size(187, 23);
             this.ForceUpdateSessions.TabIndex = 1;
@@ -280,7 +284,10 @@
             listViewItem9,
             listViewItem10,
             listViewItem11,
-            listViewItem12});
+            listViewItem12,
+            listViewItem13,
+            listViewItem14,
+            listViewItem15});
             this.listView1.Location = new System.Drawing.Point(3, 16);
             this.listView1.Name = "listView1";
             this.listView1.Size = new System.Drawing.Size(263, 322);
@@ -289,12 +296,23 @@
             this.listView1.UseCompatibleStateImageBehavior = false;
             this.listView1.View = System.Windows.Forms.View.Tile;
             // 
+            // groupBox5
+            // 
+            this.groupBox5.ForeColor = System.Drawing.SystemColors.ControlLight;
+            this.groupBox5.Location = new System.Drawing.Point(292, 134);
+            this.groupBox5.Name = "groupBox5";
+            this.groupBox5.Size = new System.Drawing.Size(200, 220);
+            this.groupBox5.TabIndex = 10;
+            this.groupBox5.TabStop = false;
+            this.groupBox5.Text = "Messages";
+            // 
             // MainWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.Black;
-            this.ClientSize = new System.Drawing.Size(780, 368);
+            this.ClientSize = new System.Drawing.Size(780, 549);
+            this.Controls.Add(this.groupBox5);
             this.Controls.Add(this.Placeholders);
             this.Controls.Add(this.groupBox4);
             this.Controls.Add(this.groupBox3);
@@ -337,5 +355,6 @@
         private System.Windows.Forms.TextBox ClanTag;
         private System.Windows.Forms.GroupBox Placeholders;
         private System.Windows.Forms.ListView listView1;
+        private System.Windows.Forms.GroupBox groupBox5;
     }
 }

@@ -124,28 +124,42 @@ namespace VRChatify
         }
         public static double GetRamUsage()
         {
+            return Math.Round(GetRamUsed() / GetRamCapacity() * 100, 0);
+        }
+        public static double GetRamCapacity() 
+        {
             ManagementClass cimobject1 = new ManagementClass("Win32_PhysicalMemory");
             ManagementObjectCollection moc1 = cimobject1.GetInstances();
-            double available = 0, capacity = 0;
+            double capacity = 0;
             foreach (ManagementObject mo1 in moc1)
             {
-                capacity += ((Math.Round(Int64.Parse(mo1.Properties["Capacity"].Value.ToString()) / 1024 / 1024 / 1024.0, 1)));
+                capacity += ((Math.Round(long.Parse(mo1.Properties["Capacity"].Value.ToString()) / 1024 / 1024 / 1024.0, 1)));
             }
             moc1.Dispose();
             cimobject1.Dispose();
+            return capacity;
+        }
 
-
+        public static double GetRamAvailable()
+        {
             ManagementClass cimobject2 = new ManagementClass("Win32_PerfFormattedData_PerfOS_Memory");
             ManagementObjectCollection moc2 = cimobject2.GetInstances();
+            double available = 0;
             foreach (ManagementObject mo2 in moc2)
             {
-                available += ((Math.Round(Int64.Parse(mo2.Properties["AvailableMBytes"].Value.ToString()) / 1024.0, 1)));
+                available += ((Math.Round(long.Parse(mo2.Properties["AvailableMBytes"].Value.ToString()) / 1024.0, 1)));
 
             }
             moc2.Dispose();
             cimobject2.Dispose();
-            return Math.Round((capacity - available) / capacity * 100, 0);
+            return available;
         }
+
+        public static double GetRamUsed()
+        {
+            return GetRamCapacity() - GetRamAvailable();
+        }
+
         public static string GetSpotifySong()
         {
             //https://stackoverflow.com/questions/37854194/get-current-song-name-for-a-local-application

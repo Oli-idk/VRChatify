@@ -11,7 +11,7 @@ namespace VRChatify
         public MainWindow()
         {
             AutoUpdater.InstalledVersion = new Version(VRChatify.Version);
-            AutoUpdater.Start("https://projects.akiradev.xyz/VRChatify/AutoUpdateInfo.xml");
+            AutoUpdater.Start("https://raw.githubusercontent.com/Oli-idk/VRChatify/main/AutoUpdateInfo.xml");
             InitializeComponent();
         }
 
@@ -48,6 +48,9 @@ namespace VRChatify
                     .Replace("{SPOTIFY}", VRChatifyUtils.GetSpotifySong())
                     .Replace("{CPU}", Math.Round(VRChatifyUtils.GetCpuUsage()).ToString())
                     .Replace("{GPU}", Math.Round(VRChatifyUtils.GetGPUUsage()).ToString())
+                    .Replace("{RAM-AVAILABLE}", VRChatifyUtils.GetRamAvailable().ToString())
+                    .Replace("{RAM-CAPACITY}", VRChatifyUtils.GetRamCapacity().ToString())
+                    .Replace("{RAM-USED}", VRChatifyUtils.GetRamUsed().ToString())
                     .Replace("{RAM}", VRChatifyUtils.GetRamUsage().ToString())
                     .Replace("{TIME}", DateTime.Now.ToString("h:mm:ss tt"))
                     .Replace("{MTIME}", DateTime.Now.ToString("HH:mm"))
@@ -55,7 +58,7 @@ namespace VRChatify
                     .Replace("{DURATION}", VRChatify.mediaManager.GetSongDuration().ToString(@"mm\:ss"))
                     .Replace("{POSITION}", VRChatify.mediaManager.GetCurrentSongTime().ToString(@"mm\:ss"))
                     .Replace("{CLANTAG}", VRChatify.ClanTagStrings[VRChatify.ClanTagIndex]);
-                    
+
                 VRChatify.SendChatMessage(oscMsg);
                 SetTimer();
             }
@@ -84,6 +87,9 @@ namespace VRChatify
                     .Replace("{SPOTIFY}", VRChatifyUtils.GetSpotifySong())
                     .Replace("{CPU}", Math.Round(VRChatifyUtils.GetCpuUsage()).ToString())
                     .Replace("{GPU}", Math.Round(VRChatifyUtils.GetGPUUsage()).ToString())
+                    .Replace("{RAM-AVAILABLE}", VRChatifyUtils.GetRamAvailable().ToString())
+                    .Replace("{RAM-CAPACITY}", VRChatifyUtils.GetRamCapacity().ToString())
+                    .Replace("{RAM-USED}", VRChatifyUtils.GetRamUsed().ToString())
                     .Replace("{RAM}", VRChatifyUtils.GetRamUsage().ToString())
                     .Replace("{TIME}", DateTime.Now.ToString("h:mm:ss tt"))
                     .Replace("{MTIME}", DateTime.Now.ToString("HH:mm"))
@@ -140,6 +146,11 @@ namespace VRChatify
             }
             VRChatify.ClanTagStrings = VRChatifyUtils.ClanTagText(ClanTag.Text);
             VRChatify.ClanTagIndex = 0;
+        }
+
+        private void listBox1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
         }
     }
 }

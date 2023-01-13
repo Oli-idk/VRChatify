@@ -106,6 +106,7 @@
     <Folder Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="AutoUpdateInfo.xml" />
     <Content Include="VRChatify.ico" />
   </ItemGroup>
   <ItemGroup>
