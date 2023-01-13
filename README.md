@@ -24,3 +24,6 @@ A application that displays your pc stats and what you are listening to on spoti
 - {DURATION}: song total duration
 - {POSITION}: song current positon
 - {CLANTAG}: clantag idk
+- {RAM-AVAILABLE}: Ram Available
+- {RAM-CAPACITY}: Total Ram
+- {RAM-USED}: Ram being used
